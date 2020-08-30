@@ -1,6 +1,7 @@
 from django.shortcuts import render
 import requests
 
+from the_weather.settings import OW_API_KEY
 from weather import OPENWEATHER_API
 from weather.forms import CityForm
 from weather.models import City
@@ -8,7 +9,6 @@ from weather.models import City
 
 def index(request):
     unit = 'metric'
-    api_key = 'YOUR_API_KEY'
     cities = City.objects.all().order_by('name')
 
     # only true if form is submitted
@@ -23,7 +23,7 @@ def index(request):
 
     for city in cities:
         #request the API data and convert the JSON to Python data types
-        response = requests.get(OPENWEATHER_API.format(city.name, unit, api_key))
+        response = requests.get(OPENWEATHER_API.format(city.name, unit, OW_API_KEY))
         if response.status_code == 200:
             city_weather = response.json()
             weather = {
