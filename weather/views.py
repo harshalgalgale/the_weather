@@ -2,6 +2,7 @@ from django.shortcuts import render
 import requests
 
 from weather import OPENWEATHER_API
+from weather.forms import CityForm
 from weather.models import City
 
 
@@ -9,6 +10,15 @@ def index(request):
     unit = 'metric'
     api_key = 'YOUR_API_KEY'
     cities = City.objects.all().order_by('name')
+
+    # only true if form is submitted
+    if request.method == 'POST':
+        # add actual request data to form for processing
+        form = CityForm(request.POST)
+        # will validate and save if validate
+        form.save()
+
+    form = CityForm()
     weather_data = []
 
     for city in cities:
@@ -33,7 +43,7 @@ def index(request):
             }
         weather_data.append(weather)
 
-    context = {'weather_data': weather_data}
+    context = {'weather_data': weather_data, 'form': form}
 
     #returns the index.html template
     return render(request, 'weather/index.html', context)
